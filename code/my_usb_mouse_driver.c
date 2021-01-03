@@ -52,7 +52,8 @@ static void usb_mouse_irq(struct urb *urb)
 	signed char *data = mouse->data;
 	struct input_dev *dev = mouse->dev;
 	int status;
-    
+	
+	// пытаемся отправить загружаемому модулю информацию о событии
 	if(send_mouse_coordinates(data[0], data[1], data[2], data[3]) != 0)
 		printk(KERN_INFO "%s usb_mouse_irq can't send data\n", MODULE_INFO_PREFIX);
 	else

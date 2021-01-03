@@ -15,8 +15,9 @@ extern int send_mouse_coordinates(char buttons, char dx, char dy, char wheel);
 static struct proc_dir_entry* our_proc_file;
 
 static int my_log_len;
-static char my_log[MY_LOG_SIZE + 32];
-static int isShiftKey = 0;
+// выход за пределы выделенной памяти в ядре == зависание || смерть
+static char my_log[MY_LOG_SIZE + 32]; // на всякий случай чуть больше 
+static int isShiftKey = 0; // флаг был ли нажат shift
 
 
 MODULE_LICENSE("GPL");
@@ -80,6 +81,7 @@ int procfs_open(struct inode *inode, struct file *file)
     return 0;
 }
 
+// вызывается при cat /proc/my_logger
 static ssize_t procfs_read(struct file *filp, char *buffer, size_t length, loff_t * offset)
 {
     static int ret = 0;
@@ -149,6 +151,7 @@ static void __exit procExit( void )
     printk(KERN_INFO "%s unregistered\n", MODULE_INFO_PREFIX);
 }
 
+// экспортируется драйвером и вызывается внутри прерывания
 extern int send_mouse_coordinates(char buttons, char dx, char dy, char wheel)
 {
     printk(KERN_INFO "%s received send_mouse_coordinates %d %d %d %d\n", MODULE_INFO_PREFIX, buttons, dx, dy, wheel);
